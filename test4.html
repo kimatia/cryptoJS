@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="core.js"></script>
+	<script type="text/javascript" src="enc-base64.js"></script>
+	<script type="text/javascript" src="hmac.js"></script>
+	<script type="text/javascript" src="sha256.js"></script>
+	
+	
+	
+</head>
+<script type="text/javascript">
+	function getBase64Encode(rawStr){
+       var wordArray=CryptoJS.enc.Utf8.parse(rawStr);
+       var result=CryptoJS.enc.Base64.stringify(wordArray);
+       return result;
+	}
+	function getBase64Decode(encStr){
+       var wordArray=CryptoJS.enc.Base64.parse(encStr);
+       var result=wordArray.toString(CryptoJS.enc.Utf8)
+       return result;
+	}
+	function doEncode(){
+		var txtEncode=document.getElementById("txtEncode");
+		var resultEncode=document.getElementById("resultEncode");
+		resultEncode.innerText=getBase64Encode(txtEncode.value);
+	}
+	function doDecode(){
+		var txtDecode=document.getElementById("txtDecode");
+		var resultDecode=document.getElementById("resultDecode");
+		resultDecode.innerText=getBase64Decode(txtDecode.value);
+	}
+	function createJWT(){
+		var txtHeader=document.getElementById("txtHeader");
+		var txtPayload=document.getElementById("txtPayload");
+		var txtSecret=document.getElementById("txtSecret");
+		var resultJWT=document.getElementById("resultJWT");
+		//convert txtHeader and txtPayload to base64
+		var base64Header= getBase64Encode(txtHeader.value);
+		var base64Payload= getBase64Encode(txtPayload.value);
+		//create a signature using hmac sha256 algorithm using hashed message and secrete parameters
+		var signature=CryptoJS.HmacSHA256(base64Header + "." + base64Payload,txtSecret.value);
+		var base64signature=CryptoJS.enc.Base64.stringify(signature);
+		var jwt=base64Header + "." + base64Payload + "." + base64signature;
+		resultJWT.innerText=jwt;
+	}
+	//header in json
+	// {
+ //     "typ":"JWT",
+ //     "alg":"SH256"
+	// }
+	//payload in json
+	// {
+ //        "iss":"Kimatia BBC",
+ //        "username":"kims",
+ //        "admin":false
+	// }
+</script>
+<body>
+<!-- converting string to base64 encoding -->
+<table>
+	<tr>
+		<td>Enter string to base64 encode:</td>
+		<td><input type="text" name="" id="txtEncode"></td>
+		<td><button onclick="doEncode()">Encode</button></td>
+	</tr>
+	<tr>
+		<td>Result:</td>
+		<td><span id="resultEncode"></span></td>
+	</tr>
+</table>
+<hr>
+<table>
+	<tr>
+		<td>Enter string to base64 decode:</td>
+		<td><input type="text" name="" id="txtDecode"></td>
+		<td><button onclick="doDecode()">Decode</button></td>
+	</tr>
+	<tr>
+		<td>Result:</td>
+		<td><span id="resultDecode"></span></td>
+	</tr>
+</table>
+<hr>
+<table>
+	<tr>
+		<td>Enter JWT header:</td>
+		<td><input type="text" name="" id="txtHeader"></td>
+	</tr>
+	<tr>
+		<td>Enter JWT payload:</td>
+		<td><input type="text" name="" id="txtPayload"></td>
+	</tr>
+	<tr>
+		<td>Enter JWT secret:</td>
+		<td><input type="text" name="" id="txtSecret"></td>
+	</tr>
+	<tr>
+	    <td>JWT Button:</td>
+		<td><button onclick="createJWT()">JWT</button></td>
+	</tr>
+	<tr>
+	    <td>Result:</td>
+		<td><div id="resultJWT" style="width: 600px;overflow-wrap: break-word;"></div></td>
+	</tr>
+</table>
+</body>
+</html> 
